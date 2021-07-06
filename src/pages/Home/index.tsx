@@ -6,37 +6,19 @@ import { api } from '../../services/api';
 import { formatPrice } from '../../util/format';
 import { useCart } from '../../hooks/useCart';
 import { Toast } from 'react-toastify/dist/components';
-
-interface Product {
-  id: number;
-  title: string;
-  price: number;
-  image: string;
-}
-
-interface ProductFormatted extends Product {
-  priceFormatted: string;
-}
-
+import { useProduct } from '../../hooks/useProduct';
 interface CartItemsAmount {
   [key: number]: number;
 }
 
-const Home = (): JSX.Element => {
-  const [products, setProducts] = useState<ProductFormatted[]>([]);
+export default function Home() {
+  const {products} = useProduct();
   const { addProduct, cart } = useCart();
 
   // const cartItemsAmount = cart.reduce((sumAmount, product) => {
-  //   // TODO
+    
   // }, {} as CartItemsAmount)
 
-  useEffect(() => {
-    async function loadProducts() {
-      api.get('products').then(response => setProducts(response.data)).catch(error => {console.log('Falha ao buscar produtos')})
-    }
-
-    loadProducts();
-  }, []);
 
   function handleAddProduct(id: number) {
     addProduct(id);
@@ -48,7 +30,7 @@ const Home = (): JSX.Element => {
         <li>
         <img src={product.image} alt={product.title} />
         <strong>{product.title}</strong>
-        <span>{product.price}</span>
+        <span>{formatPrice(product.price)}</span>
         <button
           type="button"
           data-testid="add-product-button"
@@ -66,4 +48,3 @@ const Home = (): JSX.Element => {
   );
 };
 
-export default Home;
