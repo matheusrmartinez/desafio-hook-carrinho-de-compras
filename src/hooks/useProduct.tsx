@@ -1,10 +1,11 @@
 import { createContext, ReactNode, useContext, useEffect, useState } from "react";
 import { api } from "../services/api";
-import { Product } from "../types";
+import { ProductFormatted } from "../types";
+import { formatPrice } from "../util/format";
 
 interface ProductContextData {
-  products: Product[];
-  setProducts(value: Product[]): void;
+  products: ProductFormatted[];
+  setProducts(value: ProductFormatted[]): void;
 }
 
 interface ProductProviderProps {
@@ -14,14 +15,24 @@ interface ProductProviderProps {
 const ProductContext = createContext<ProductContextData>({} as ProductContextData);
 
 export function ProductProvider({children}: ProductProviderProps){
-  const [products, setProducts] = useState<Product[]>([] as Product[]);
+  const [products, setProducts] = useState<ProductFormatted[]>([] as ProductFormatted[]);
 
   useEffect(() => {
     async function loadProducts() {
-      api.get('products').then(response => setProducts(response.data)).catch(error => {console.log('Falha ao buscar produtos')})
+      const response = await api.get('products');
+
+      const productsApi: ProductFormatted[] = response.data;
+
+      const productsFormatted = productsApi.map(product => {
+        product.priceFormatted = formatPrice(product.price);
+        return product;
+      })
+
+      setProducts(productsFormatted);
     }
 
     loadProducts();
+
   }, [])
 
 return (
