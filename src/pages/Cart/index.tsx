@@ -5,8 +5,8 @@ import {
   MdRemoveCircleOutline,
 } from 'react-icons/md';
 import { useCart } from '../../hooks/useCart';
+import { formatPrice } from '../../util/format';
 
-// import { useCart } from '../../hooks/useCart';
 // import { formatPrice } from '../../util/format';
 import { Container, ProductTable, Total } from './styles';
 
@@ -21,15 +21,17 @@ interface Product {
 const Cart = (): JSX.Element => {
   const { cart, removeProduct, updateProductAmount } = useCart();
 
-  // const cartFormatted = cart.map(product => ({
-  //   // TODO
-  // }))
-  // const total =
-  //   formatPrice(
-  //     cart.reduce((sumTotal, product) => {
-  //       // TODO
-  //     }, 0)
-  //   )
+  const cartFormatted = cart.map(product => ({
+    priceFormatted: formatPrice(product.amount),
+    subTotal: formatPrice(product.amount * product.amount)
+  }))
+  const total =
+    formatPrice(
+      cart.reduce((sumTotal, product) => {
+        sumTotal += product.amount;
+        return sumTotal;
+      }, 0)
+    )
 
   function handleProductIncrement(product: Product) {
     // TODO
@@ -57,9 +59,12 @@ const Cart = (): JSX.Element => {
         </thead>
         <tbody>
           <tr data-testid="product">
-            <td>
-              <img src="https://rocketseat-cdn.s3-sa-east-1.amazonaws.com/modulo-redux/tenis1.jpg" alt="Tênis de Caminhada Leve Confortável" />
+            {cart.map(product => {
+              <td>
+              <img src={product.image} alt="Tênis de Caminhada Leve Confortável" />
             </td>
+            }, [])}
+            
             <td>
               <strong>Tênis de Caminhada Leve Confortável</strong>
               <span>R$ 179,90</span>

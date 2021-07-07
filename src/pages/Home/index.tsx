@@ -15,9 +15,10 @@ export default function Home() {
   const {products} = useProduct();
   const { addProduct, cart } = useCart();
 
-  // const cartItemsAmount = cart.reduce((sumAmount, product) => {
-    
-  // }, {} as CartItemsAmount)
+  const cartItemsAmount = cart.reduce((sumAmount, product) => {
+    sumAmount[product.id] = (sumAmount[product.id] ?? 0) + product.amount;
+    return sumAmount;
+  }, {} as CartItemsAmount)
 
 
   function handleAddProduct(id: number) {
@@ -38,7 +39,7 @@ export default function Home() {
         >
           <div data-testid="cart-product-quantity">
             <MdAddShoppingCart size={16} color="#FFF" />
-            {/* {cartItemsAmount[product.id] || 0} */} 2
+            {cartItemsAmount[product.id] || 0}
           </div>
           <span>ADICIONAR AO CARRINHO</span>
         </button>
